@@ -1,0 +1,6 @@
+# One existing vote, tied to the "scarecrow" joke above, so tests can check
+# that a second vote from the same IP on the same joke gets rejected.
+already_voted:
+  joke: scarecrow
+  vote_type: up
+  voter_ip: 203.0.113.5

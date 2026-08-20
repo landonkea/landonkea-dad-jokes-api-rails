@@ -1,0 +1,20 @@
+# Two sample jokes tests can rely on existing: one that's already picked up a
+# few votes (useful for testing vote-count math and sorting) and one that's
+# brand new with zero votes.
+scarecrow:
+  setup: Why did the scarecrow win an award?
+  punchline: He was outstanding in his field.
+  category: classic
+  groan_level: 10
+  upvotes: 5
+  downvotes: 1
+  author: Dad #1
+
+impasta:
+  setup: What do you call a fake noodle?
+  punchline: An impasta.
+  category: puns
+  groan_level: 9
+  upvotes: 0
+  downvotes: 0
+  author: Dad #2

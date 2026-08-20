@@ -1,0 +1,69 @@
+<% content_for(:title) { "Submit a Dad Joke" } %>
+
+<h1 class="text-2xl font-bold mb-1">✍️ Submit Your Dad Joke</h1>
+<p class="text-stone-500 text-sm mb-6">Share the pain. Let others groan at your humor.</p>
+
+<div class="bg-white rounded-2xl shadow-md p-6">
+  <%# form_with builds a form that Turbo submits in the background by default.
+      When @joke fails to save, the controller re-renders this same page with
+      @joke still holding the text the visitor typed, so form_with knows to
+      point the form at "create" (a new record) rather than "update". %>
+  <%= form_with model: @joke, url: jokes_path, class: "space-y-5" do |form| %>
+    <% if @joke.errors.any? %>
+      <%# Rails collects every validation failure onto @joke.errors, listing
+          them all at once (rather than one at a time) means an average
+          visitor won't have to submit the form five times to find every
+          problem. %>
+      <div class="rounded-lg bg-red-100 text-red-800 text-sm px-4 py-3">
+        <p class="font-semibold mb-1"><%= pluralize(@joke.errors.count, "error") %> stopped this joke from being saved:</p>
+        <ul class="list-disc list-inside">
+          <% @joke.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div>
+      <%= form.label :setup, "Setup (the wind-up)", class: "block text-sm font-medium mb-1" %>
+      <%= form.text_field :setup, required: true, maxlength: 500,
+            placeholder: "I'm afraid for the calendar...",
+            class: "w-full rounded-lg border-stone-300 focus:border-amber-500 focus:ring-amber-500" %>
+    </div>
+
+    <div>
+      <%= form.label :punchline, "Punchline (the groan inducer)", class: "block text-sm font-medium mb-1" %>
+      <%= form.text_field :punchline, required: true, maxlength: 500,
+            placeholder: "Its days are numbered.",
+            class: "w-full rounded-lg border-stone-300 focus:border-amber-500 focus:ring-amber-500" %>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <%= form.label :category_id, "Category", class: "block text-sm font-medium mb-1" %>
+        <%# collection_select builds a <select> dropdown straight from the
+            @categories list the controller loaded, each option's value is
+            the category's id, exactly what a "belongs_to :category" joke needs. %>
+        <%= form.collection_select :category_id, @categories, :id, :name,
+              {}, class: "w-full rounded-lg border-stone-300 focus:border-amber-500 focus:ring-amber-500" %>
+      </div>
+
+      <div>
+        <%= form.label :author, "Your Dad Name", class: "block text-sm font-medium mb-1" %>
+        <%= form.text_field :author, maxlength: 100, placeholder: "Anonymous Dad",
+              class: "w-full rounded-lg border-stone-300 focus:border-amber-500 focus:ring-amber-500" %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.label :groan_level, "Groan Level (1-10)", class: "block text-sm font-medium mb-1" %>
+      <%# A plain HTML range slider, defaults to 5 (the middle) via the Joke
+          model/migration default when @joke is a fresh, unsaved record. %>
+      <%= form.range_field :groan_level, min: 1, max: 10, value: @joke.groan_level || 5,
+            class: "w-full" %>
+    </div>
+
+    <%= form.submit "🎤 Drop the Punchline",
+          class: "px-5 py-2 rounded-lg bg-stone-800 text-amber-50 font-semibold hover:bg-stone-700 cursor-pointer" %>
+  <% end %>
+</div>

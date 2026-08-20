@@ -1,0 +1,63 @@
+<% content_for(:title) { "Browse Dad Jokes" } %>
+
+<h1 class="text-2xl font-bold mb-1">📚 Browse Jokes</h1>
+<p class="text-stone-500 text-sm mb-6">The entire encyclopedia of groans.</p>
+
+<%# Category filter buttons. Each one is a plain link that sets ?category=
+    in the URL and reloads the page, "All" clears the filter entirely by
+    linking back to the plain jokes_path with no query string. %>
+<div class="mb-5">
+  <p class="text-xs uppercase tracking-wide text-stone-400 mb-2">Filter by category</p>
+  <div class="flex flex-wrap gap-2">
+    <%= link_to "All (#{@total_count})", jokes_path(sort: @selected_sort),
+          class: "px-3 py-1 rounded-full text-sm font-medium #{@selected_category.blank? ? "bg-stone-800 text-amber-50" : "bg-white text-stone-600 hover:bg-stone-100"}" %>
+    <% @categories.each do |name, count| %>
+      <%= link_to "#{name} (#{count})", jokes_path(category: name, sort: @selected_sort),
+            class: "px-3 py-1 rounded-full text-sm font-medium #{@selected_category == name ? "bg-stone-800 text-amber-50" : "bg-white text-stone-600 hover:bg-stone-100"}" %>
+    <% end %>
+  </div>
+</div>
+
+<%# Sort dropdown. It's a tiny form that submits itself on change (via the
+    inline onchange below) rather than needing a separate "Go" button. %>
+<div class="mb-6 flex items-center gap-2 text-sm">
+  <label for="sort" class="text-stone-500">Sort by:</label>
+  <select id="sort" class="rounded-lg border-stone-300 text-sm"
+          onchange="window.location.href = this.value">
+    <% sort_options = { "" => "Top Voted", "groan" => "Most Groans", "oldest" => "Oldest First", "controversial" => "Most Controversial" } %>
+    <% sort_options.each do |value, label| %>
+      <%# Build the URL each option would navigate to up front, so plain
+          onchange navigation (no JavaScript framework needed) works. %>
+      <option value="<%= jokes_path(category: @selected_category, sort: value.presence) %>"
+              <%= "selected" if @selected_sort.to_s == value %>>
+        <%= label %>
+      </option>
+    <% end %>
+  </select>
+</div>
+
+<% if @jokes.any? %>
+  <div class="space-y-4">
+    <% @jokes.each do |joke| %>
+      <%= render "jokes/joke_list_item", joke: joke %>
+    <% end %>
+  </div>
+
+  <%# Simple prev/next pagination. @page and @total_pages come from the
+      controller's manual LIMIT/OFFSET math (see JokesController#index). %>
+  <div class="mt-8 flex items-center justify-center gap-4 text-sm">
+    <% if @page > 1 %>
+      <%= link_to "← Previous", jokes_path(category: @selected_category, sort: @selected_sort, page: @page - 1),
+            class: "text-stone-600 hover:text-stone-900" %>
+    <% end %>
+    <span class="text-stone-400">Page <%= @page %> of <%= @total_pages %></span>
+    <% if @page < @total_pages %>
+      <%= link_to "Next →", jokes_path(category: @selected_category, sort: @selected_sort, page: @page + 1),
+            class: "text-stone-600 hover:text-stone-900" %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="bg-white rounded-2xl shadow-md p-6 text-center text-stone-500">
+    No jokes match that filter yet. <%= link_to "Submit one?", new_joke_path, class: "text-amber-700 underline" %>
+  </div>
+<% end %>

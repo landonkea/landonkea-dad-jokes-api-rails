@@ -1,0 +1,23 @@
+<%# This partial renders the upvote/downvote buttons plus their live counts for
+    one joke. It's wrapped in a div with a predictable id (dom_id) so that
+    when a vote is cast, the server can send back a Turbo Stream that says
+    "replace the div with exactly this id" and swap in the updated version,
+    that's the whole trick behind voting without a page reload. %>
+<div id="<%= dom_id(joke, :votes) %>" class="flex items-center gap-3">
+  <% if already_voted %>
+    <%# Once this visitor (by IP address) has already voted, both buttons turn
+        into plain, non-clickable counts instead of real buttons, so there's
+        nothing left to click that would just get rejected by the server anyway. %>
+    <span class="px-3 py-1 rounded-full bg-stone-100 text-stone-500 text-sm">👍 <%= joke.upvotes %></span>
+    <span class="px-3 py-1 rounded-full bg-stone-100 text-stone-500 text-sm">👎 <%= joke.downvotes %></span>
+    <span class="text-xs text-stone-400 italic">you already voted on this one</span>
+  <% else %>
+    <%# button_to builds a real HTML form with the CSRF token baked in (that's
+        what keeps voting safe from cross-site forgery), Turbo intercepts its
+        submit and sends it in the background instead of doing a full page load. %>
+    <%= button_to "👍 #{joke.upvotes}", joke_vote_path(joke), params: { vote_type: "up" },
+          class: "px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm font-medium hover:bg-green-200" %>
+    <%= button_to "👎 #{joke.downvotes}", joke_vote_path(joke), params: { vote_type: "down" },
+          class: "px-3 py-1 rounded-full bg-red-100 text-red-800 text-sm font-medium hover:bg-red-200" %>
+  <% end %>
+</div>

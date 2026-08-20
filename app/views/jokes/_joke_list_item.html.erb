@@ -1,0 +1,19 @@
+<%# A compact row for the browse list, lighter than the full joke card
+    (no punchline-reveal drama, this is a "scan a lot of jokes quickly" view),
+    but it still shows the vote buttons live and updates them via Turbo. %>
+<div class="bg-white rounded-xl shadow-sm p-5 flex flex-col gap-2">
+  <div class="flex items-center justify-between">
+    <%# Linking the setup text to the joke's own page (jokes#show) gives every
+        joke a permalink, useful for sharing one specific joke. %>
+    <%= link_to joke.setup, joke_path(joke), class: "font-medium hover:text-amber-700" %>
+    <span class="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-800 uppercase tracking-wide shrink-0 ml-3">
+      <%= joke.category.name %>
+    </span>
+  </div>
+  <p class="text-stone-500 text-sm italic">"<%= joke.punchline %>"</p>
+  <div class="flex items-center justify-between pt-2">
+    <%= render "jokes/vote_buttons", joke: joke,
+          already_voted: Vote.exists?(joke: joke, voter_ip: request.remote_ip) %>
+    <span class="text-xs text-stone-400">Groan <%= joke.groan_level %>/10 &middot; <%= joke.author %></span>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%# The page title shown in the browser tab, each view can override it with content_for(:title) %>
+      <%= content_for(:title) || "Dad Jokes" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Dad Jokes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%# csrf_meta_tags embeds the CSRF protection token in the page, Turbo reads it automatically
+        for every form/link submission so Rails can tell "this request really came from our own page." %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets, this is where the Tailwind
+        utility classes used throughout the views actually come from. %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-amber-50 text-stone-800 min-h-screen">
+    <%# The top navigation bar, present on every page, links to the four main sections of the app. %>
+    <header class="bg-stone-800 text-amber-50 shadow-md">
+      <nav class="container mx-auto px-5 py-4 flex flex-wrap items-center justify-between gap-3">
+        <%# link_to root_path sends visitors to "/", which is wired up in routes.rb to jokes#random. %>
+        <%= link_to "🎲 Dad Jokes", root_path, class: "text-xl font-bold tracking-tight hover:text-amber-300" %>
+        <div class="flex flex-wrap gap-4 text-sm font-medium">
+          <%= link_to "Random Joke", random_path, class: "hover:text-amber-300" %>
+          <%= link_to "Browse", jokes_path, class: "hover:text-amber-300" %>
+          <%= link_to "Submit a Joke", new_joke_path, class: "hover:text-amber-300" %>
+          <%= link_to "Stats", stats_path, class: "hover:text-amber-300" %>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container mx-auto px-5 py-8 max-w-3xl">
+      <%# flash is Rails' built-in one-time message store, controllers set flash[:notice] or
+          flash[:alert] right before a redirect, and it shows here exactly once, then clears itself. %>
+      <% flash.each do |type, message| %>
+        <div class="mb-6 rounded-lg px-4 py-3 text-sm font-medium <%= type == "alert" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800" %>">
+          <%= message %>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+
+    <footer class="text-center text-stone-500 text-xs py-8">
+      <p>A Ruby on Rails rewrite of the Dad Jokes API, built with Hotwire/Turbo for the voting.</p>
+    </footer>
+  </body>
+</html>

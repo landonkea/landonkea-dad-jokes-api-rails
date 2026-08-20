@@ -1,0 +1,8 @@
+<%# This is what makes voting update the page without a full reload. Turbo
+    Streams work by naming a DOM element (by its id) and an action to take on
+    it, here we say "replace whatever's currently sitting in the
+    dom_id(@joke, :votes) div with this freshly rendered partial." The
+    browser swaps just that one small piece of HTML in place. %>
+<%= turbo_stream.replace dom_id(@joke, :votes) do %>
+  <%= render "jokes/vote_buttons", joke: @joke, already_voted: @already_voted %>
+<% end %>

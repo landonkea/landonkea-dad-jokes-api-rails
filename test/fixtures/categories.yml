@@ -1,0 +1,8 @@
+# Fixture data: rows Rails loads into the test database before every test
+# runs, so tests always start from the same known state instead of whatever
+# happens to be in the real development database.
+classic:
+  name: classic
+
+puns:
+  name: puns

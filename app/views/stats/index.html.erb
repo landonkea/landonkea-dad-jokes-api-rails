@@ -1,0 +1,50 @@
+<% content_for(:title) { "Stats - Dad Jokes" } %>
+
+<h1 class="text-2xl font-bold mb-1">📊 The Groan Analytics</h1>
+<p class="text-stone-500 text-sm mb-6">How many people have suffered?</p>
+
+<%# A row of five stat tiles, mirrors the original app's StatsPanel cards. %>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+  <% [
+       [@total_jokes, "Total Jokes", "🃏"],
+       [@total_votes, "Total Votes", "🗳️"],
+       [@avg_groan_level, "Avg Groan", "😫"],
+       [@category_counts.length, "Categories", "📂"],
+     ].each do |value, label, emoji| %>
+    <div class="bg-white rounded-xl shadow-sm p-4 text-center">
+      <p class="text-2xl font-bold"><%= value %></p>
+      <p class="text-xs text-stone-500"><%= label %></p>
+      <p class="text-lg"><%= emoji %></p>
+    </div>
+  <% end %>
+</div>
+
+<% if @most_upvoted %>
+  <div class="bg-white rounded-2xl shadow-md p-6 mb-8">
+    <h2 class="font-semibold mb-2">🏆 Most Popular Dad Joke</h2>
+    <p class="font-medium"><%= @most_upvoted.setup %></p>
+    <p class="italic text-stone-600">"<%= @most_upvoted.punchline %>"</p>
+    <p class="text-sm text-stone-400 mt-2">👍 <%= @most_upvoted.upvotes %> upvotes, the people have spoken</p>
+  </div>
+<% end %>
+
+<% if @category_counts.any? %>
+  <div class="bg-white rounded-2xl shadow-md p-6">
+    <h2 class="font-semibold mb-4">📈 Category Breakdown</h2>
+    <% max_count = @category_counts.map { |_, count| count }.max %>
+    <div class="space-y-3">
+      <% @category_counts.each do |name, count| %>
+        <div class="flex items-center gap-3">
+          <span class="w-24 text-sm capitalize shrink-0"><%= name %></span>
+          <div class="flex-1 bg-stone-100 rounded-full h-3 overflow-hidden">
+            <%# The bar's width is this category's share of whichever category
+                has the most jokes, so the biggest category always fills the
+                row completely and the rest scale relative to it. %>
+            <div class="bg-amber-400 h-3 rounded-full" style="width: <%= max_count.positive? ? (count.to_f / max_count * 100) : 0 %>%"></div>
+          </div>
+          <span class="w-8 text-sm text-stone-500 text-right"><%= count %></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
